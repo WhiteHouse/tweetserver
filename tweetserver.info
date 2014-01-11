@@ -1,0 +1,12 @@
+name = Tweet Server
+description = Consumes tweets from Twitter, then pushes them up to a CDN for consumption by your Twitter apps.
+version = VERSION
+core = 7.x
+dependencies[] = block
+dependencies[] = syslog
+
+; contrib
+; --------
+; dependencies[] = statsd
+dependencies[] = guzzle
+dependencies[] = composer_autoload

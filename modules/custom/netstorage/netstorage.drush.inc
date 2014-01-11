@@ -24,7 +24,6 @@ function netstorage_drush_command() {
       'drush anu <filepath>' => '',
     ),
     'aliases' => array('nsc'),
-    //'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_DATABASE,
   );
 
   return $items;

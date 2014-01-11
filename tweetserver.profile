@@ -18,5 +18,7 @@ function tweetserver_form_install_configure_form_alter(&$form, $form_state) {
     'Guzzle',
     'Composer Autoload',
   );
-  drupal_set_message($message);
+  foreach ($messages as $message) {
+    drupal_set_message($message);
+  }
 }

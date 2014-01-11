@@ -10,3 +10,7 @@ dependencies[] = syslog
 ; dependencies[] = statsd
 dependencies[] = guzzle
 dependencies[] = composer_autoload
+
+; custom
+; ------
+dependencies[] = twitter_api

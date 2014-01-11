@@ -17,4 +17,5 @@ defaults[projects][subdir] = contrib
 ; -----------------
 projects[] = composer_autoload
 projects[] = guzzle
+projects[] = devel
 

@@ -1,0 +1,3 @@
+name = NetStorage
+description = Utilities for working with Akamai NetStorage
+core = 7.x

@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * @file
+ * Provides primary Drupal hook implementations.
+ *
+ * @author Jimmy Berry ("boombatower", http://drupal.org/user/214218)
+ */
+
+/**
+ * Implements hook_init().
+ */
+function composer_autoload_init() {
+  // Check for cached list of loaders, otherwise rebuild list.
+  if ($loaders = cache_get('composer_autoload')) {
+    $loaders = $loaders->data;
+  }
+  else {
+    $loaders = composer_autoload_cache_rebuild();
+  }
+
+  // Include each autoload.php file.
+  foreach ($loaders as $loader) {
+    include $loader;
+  }
+}
+
+/**
+ * Rebuild composer autoload.php file list cache.
+ *
+ * @return
+ *   An array of autoload.php file paths relative to DRUPAL_ROOT.
+ */
+function composer_autoload_cache_rebuild() {
+  $loaders = array();
+
+  // Cycle through each of the enabled modules and check for autoload.php.
+  $modules = module_list();
+  foreach ($modules as $module) {
+    $path = drupal_get_path('module', $module);
+    if ($files = file_scan_directory($path, '/autoload\.php/')) {
+      $loaders = array_merge($loaders, array_keys($files));
+    }
+  }
+
+  // Cache list of loaders and return for immediate use.
+  cache_set('composer_autoload', $loaders);
+  return $loaders;
+}

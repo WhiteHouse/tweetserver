@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @file
+ * Guzzle HTTP client library
+ *
+ * This module uses the composer autoloader to initialise the Guzzle library.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function guzzle_help($path, $arg) {
+  $output = '';
+
+  switch ($path) {
+    case 'admin/help#guzzle':
+      // Display the introduction paragraph.
+      $output .= '<p>' . t('<a href="@guzzle">Guzzle</a> is a PHP framework for web projects. Speed up the creation and maintenance of your PHP web applications. Replace the repetitive coding tasks by power, control and pleasure.</p>', array(
+        '@guzzle' => 'http://guzzlephp.org',
+      ));
+
+      // Test out using the module if we're actually on the help page.
+      if ($_GET['q'] == 'admin/help/guzzle') {
+        $output .= '<h3>' . t('Guzzle Example') . '</h3>';
+        $client = new Guzzle\Service\Client('http://drupal.org');
+        $response = $client->get('/download')->send();
+        $output .= '<pre>' . print_r($response, TRUE) . '</pre>';
+      }
+  }
+
+  return $output;
+}

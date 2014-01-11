@@ -1,0 +1,25 @@
+name = Guzzle
+description = "Guzzle HTTP client"
+
+; Core version (required)
+core = 7.x
+
+; Package name (see http://drupal.org/node/542202 for a list of names)
+package = Development
+
+; PHP version requirement (optional)
+php = 5.3.2
+
+; Loadable code files
+files[] = guzzle.module
+files[] = guzzle.test
+
+; Module dependencies
+dependencies[] = composer_autoload
+
+; Information added by drupal.org packaging script on 2013-09-30
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "guzzle"
+datestamp = "1380581652"
+

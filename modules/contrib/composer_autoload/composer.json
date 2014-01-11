@@ -1,0 +1,25 @@
+{
+  "name": "drupal/composer_autoload",
+  "type": "drupal-module",
+  "description": "Cache and include autoload.php files.",
+  "keywords": ["autoload", "composer"],
+  "homepage": "http://drupal.org/project/composer_autoload",
+  "license": "GPL-2.0",
+
+  "authors": [
+    {
+      "name": "Jimmy Berry",
+      "email": "jimmy@boombatower.com",
+      "homepage": "http://blog.boombatower.com/"
+    }
+  ],
+
+  "support": {
+    "issues": "http://drupal.org/project/issues/composer_autoload",
+    "source": "http://drupalcode.org/project/composer_autoload.git"
+  },
+
+  "require": {
+    "php": ">=5.3",
+  }
+}

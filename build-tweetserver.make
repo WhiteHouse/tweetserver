@@ -1,5 +1,5 @@
-; Forms
-; ---------
+; Tweet Server
+; -------------
 
 ; Core version
 ; -------------
@@ -9,13 +9,17 @@ core = 7.x
 ; ------------
 api = 2
 
+; Drupal core
+; -------------
+projects[] = drupal
+
 ; Defaults
 ; ---------
-defaults[projects][subdir] = contrib
+defaults[projects][subdir] = tweetserver
 
 ; Contrib projects
 ; -----------------
 projects[] = composer_autoload
-projects[] = guzzle
 projects[] = devel
-
+projects[] = guzzle
+projects[] = twitter_api

@@ -8,8 +8,7 @@ dependencies[] = syslog
 
 ; contrib
 ; --------
-; dependencies[] = statsd
 dependencies[] = composer_autoload
 dependencies[] = guzzle
 dependencies[] = netstorage
-dependencies[] = twitter_api
+dependencies[] = twitterapi

@@ -35,7 +35,7 @@ projects[netstorage][download][type] = git
 projects[netstorage][download][url] = git://github.com/bryanhirsch/netstorage.git
 projects[netstorage][download][branch] = 7.x-1.x
 
-projects[twitter_api][type] = module
-projects[twitter_api][download][type] = git
-projects[twitter_api][download][url] = git://github.com/bryanhirsch/twitter_api.git
-projects[twitter_api][download][branch] = 7.x-1.x
+projects[twitterapi][type] = module
+projects[twitterapi][download][type] = git
+projects[twitterapi][download][url] = git://github.com/bryanhirsch/twitterapi.git
+projects[twitterapi][download][branch] = 7.x-1.x

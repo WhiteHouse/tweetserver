@@ -13,6 +13,13 @@ api = 2
 ; -------------
 projects[] = drupal
 
+; Install profile
+; -----------------
+projects[tweetserver][type] = profile
+projects[tweetserver][download][type] = git
+projects[tweetserver][download][url] = git://github.com/bryanhirsch/tweetserver.git
+projects[tweetserver][download][branch] = 7.x-1.x
+
 ; Defaults
 ; ---------
 defaults[projects][subdir] = tweetserver

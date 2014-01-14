@@ -1,0 +1,30 @@
+<?php
+/**
+ * @file tweetfetch.module
+ *   Check for new tweets and write them to json files.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function tweetfetch_menu() {
+  $items = array();
+
+  $items['admin/config/tweetfetch'] = array(
+    'title' => 'Configure Tweet Fetch',
+    'description' => 'Configure request to Twitter REST API to fetch tweets.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tweetfetch_admin_config'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'tweetfetch.admin.inc',
+  );
+
+  return $items;
+}
+
+
+/**
+ *
+ */
+function tweetfetch() {
+}

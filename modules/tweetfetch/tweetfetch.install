@@ -1,0 +1,43 @@
+<?php
+/**
+ * Implements hook_schema().
+ */
+function tweetfetch_schema() {
+  $schema['tweetfetch_tweets'] = array(
+    'description' => 'Table to store tweets as they are fetched.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Tweet id from Twitter',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0, 
+      ),
+      'created_at' => array(
+        'description' => 'When tweet was created (human readable)',
+        'type' => 'varchar',
+        'length' => 60,
+        'not null' => TRUE,
+        'default' => '',
+      ), 
+      'created_timestamp' => array(
+        'description' => 'created_at converted to a unix timestamp for easy comparison',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0, 
+      ), 
+      'json' => array(
+        'description' => 'Full json-encoded response from Twitter',
+        'type' => 'text',
+      ), 
+    ),
+    'indexes' => array(
+      'id' => array('id'),
+      'created_timestamp' => array('created_timestamp'),
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}

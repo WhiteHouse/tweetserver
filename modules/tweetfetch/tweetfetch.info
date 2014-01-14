@@ -1,0 +1,5 @@
+name = Tweet Fetch
+description = Check for new tweets. Write them to static files.
+core = 7.x
+configure = admin/config/tweetfetch
+dependencies[] = twitterapi

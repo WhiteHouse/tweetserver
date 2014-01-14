@@ -9,6 +9,7 @@ function tweetfetch_schema() {
       'id' => array(
         'description' => 'Tweet id from Twitter',
         'type' => 'int',
+        'size' => 'big',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0, 
@@ -30,6 +31,13 @@ function tweetfetch_schema() {
       'json' => array(
         'description' => 'Full json-encoded response from Twitter',
         'type' => 'text',
+      ), 
+      'count' => array(
+        'description' => 'Tweet id from Twitter',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0, 
       ), 
     ),
     'indexes' => array(

@@ -22,9 +22,216 @@ function tweetfetch_menu() {
   return $items;
 }
 
+/**
+ * @return array | bool
+ *   Return API response as an array or false if there are no new tweets.
+ */
+function tweetfetch_fetch() {
+  if (!$tweets = _tweetfetch_fetch()) {
+    // If empty, there are no new tweets. Notify user, then we're done.
+    _tweetfetch_notify_user_no_new_tweets();
+    return FALSE;
+  }
+
+  foreach ($tweets as $tweet) {
+    // Get unix timestamp for time when tweet was created.
+    $created_timestamp = strtotime($tweet['created_at']);  
+
+    // Convert response to JSON. Store as an array at index 0 to preserve
+    // Twitter API schema for consuming scripts.
+    $json = drupal_json_encode(array($tweet));
+
+    // Increment tweet count.
+    if (!isset($count)) {
+      // This is our first time through the loop. Get stored count.
+      $count = variable_get('tweetfetch_count', '');
+    }
+    if ($count === '') {
+      // Count has started over. Start counting the first tweet from 0.
+      $count = 0;
+    }
+    else {
+      // This is tweet number N + 1.
+      $count++; 
+    }
+
+    // Save it in the db.
+    $id = $tweet['id'];
+    $created_at = $tweet['created_at'];
+    _tweetfetch_save_tweet($id, $created_at, $created_timestamp, $json, $count);
+
+    // Write a static JSON file.
+    if ($filepath = _tweetfetch_write($json, $count)) {
+      drupal_set_message(t("New file: !here", array('!here' => $filepath)));
+    }
+    else {
+      // Notify user of failure.
+      drupal_set_message(t("Sorry. File could not be written: !here", array('!here' => $filepath)), 'error');
+    }
+   
+    // Invoke hook_tweetfetch. Pass tweet and file path.
+    module_invoke_all('hook_tweetfetch', $filepath);
+
+    // Keep track of latest since_id. If since variables have not been set, or
+    //  if previous since vars are from earlier tweets, (re)save since variables.
+    if (!isset($since_timestamp) || ($since_timestamp < $created_timestamp)) {
+      $since_id = $tweet['id'];  
+      $since_timestamp = $created_timestamp;
+    }
+  }
+
+  // Update since_id, to be appended to next fetch request. (Like incrementing counter.)
+  variable_set('tweetfetch_since_id', $since_id);
+  drupal_set_message(t('tweetfetch_since_id has been updated to: !since_id', array('!since_id' => $since_id)));
+
+  // Update tweetfetch_count.
+  variable_set('tweetfetch_count', $count);
+
+  // Return full Twitter API response.
+  return $tweets;
+}
 
 /**
+ * @param array $id
+ *   Twitter tweet id
  *
+ * @param string $created_at
+ *   Human readable created time/date
+ *
+ * @param int $created_timestamp
+ *   Unix timestamp for time created
+ *
+ * @param int $json
+ *   JSON API response
  */
-function tweetfetch() {
+function _tweetfetch_save_tweet($id, $created_at, $created_timestamp, $json, $count) {
+  db_insert('tweetfetch_tweets')
+    ->fields(array(
+      'id' => $id,
+      'created_at' => $created_at,
+      'created_timestamp' => $created_timestamp,
+      'json' => $json,
+      'count' => $count,
+    ))
+    ->execute();
+}
+
+/**
+ * Execute actual "fetch" API request.
+ */
+function _tweetfetch_fetch() {
+  if (variable_get('tweetfetch_debug', FALSE)) {
+    $text = t('Note: tweetfetch_fetch() is using dummy data. To use real data disable debugging here admin/config/tweetfetch (variable tweetfetch_debug)');
+    drupal_set_message($text, 'warning');
+    return _tweetfetch_get_dummy_response();
+  }
+
+  // Get API request.
+  $request = tweetfetch_get_request();
+
+  // Submit request to Twitter and receive response.
+  $twitter_api = new TwitterApi();
+  $response = $twitter_api->get($request);
+ 
+  return $response;
+}
+
+/**
+ * Zero out tweets and start over collecting new ones.
+ *
+ * @param array $debug
+ *   Things not to reset:
+ *   - 'since_id'
+ *   - 'count'
+ *   - 'db'
+ *   - 'files'
+ */
+function tweetfetch_reset($debug = array()) {
+
+  // Zero out tweetfetch_since_id variable.
+  if (!in_array('since_id', $debug)) {
+    variable_set('tweetfetch_since_id', '');
+    drupal_set_message('since_id reset');
+  }
+
+  // Zero out tweetfetch_count variable.
+  if (!in_array('count', $debug)) {
+    variable_set('tweetfetch_count', '');
+    drupal_set_message('tweetfetch_count reset to empty, counting will restart at 0');
+  }
+
+  // Zero out tweetfetch_tweets database table.
+  if (!in_array('db', $debug)) {
+    db_delete('tweetfetch_tweets')->execute();
+    drupal_set_message('tweetfetch_tweets table reset');
+  }
+
+  // Zero out json files.
+  if (!in_array('files', $debug)) {
+    // drupal_set_message('files/tweets/* reset');
+    // @todo
+  }
+
+}
+
+/**
+ * Append since_id to tweetfetch_request.
+ *
+ * @return array
+ */
+function tweetfetch_get_request() {
+  $since_id = variable_get('tweetfetch_since_id', FALSE); 
+  $request = variable_get('tweetfetch_request', FALSE);
+  $request = ($since_id) ? "{$request}&since_id={$since_id}" : $request;
+  
+  return $request;
+}
+
+/**
+ * Return dummy data included with module.
+ */
+function _tweetfetch_get_dummy_response() {
+  $path = DRUPAL_ROOT 
+        . "/" . drupal_get_path('module', 'tweetfetch')
+        . "/json-examples/user_timeline.screen_name=whitehouse.count=10.json";
+  $contents = file_get_contents($path);
+  $contents = drupal_json_decode($contents);
+
+  return $contents;
+}
+
+/**
+ * No new tweets available. Notify user.
+ */
+function _tweetfetch_notify_user_no_new_tweets() {
+  if ($since_id = variable_get('tweetfetch_since_id', FALSE)) {
+    $message = t('No new tweets available after since_id: !since_id', array('!since_id' => $since_id));
+    drupal_set_message($message);
+  }
+  else {
+    drupal_set_message(t('No tweets available.'));
+  }
+}
+
+/**
+ * Write JSON to files/tweets directory.
+ *
+ * @param string $json
+ *   Twitter API response
+ *
+ * @param int $count
+ *   Tweet count
+ *
+ * @return string | bool
+ *   Path to JSON file or false for fail.
+ */
+function _tweetfetch_write($json, $count) {
+  $public = new DrupalPublicStreamWrapper;
+  $files_directory = $public->getDirectoryPath();
+  $tweets_directory = DRUPAL_ROOT . "/{$files_directory}/tweets";
+  file_prepare_directory($tweets_directory, FILE_CREATE_DIRECTORY);
+  $file_path = "{$tweets_directory}/{$count}.json";
+  $result = file_put_contents($file_path, $json);
+
+  return ($result) ? $file_path : FALSE;
 }

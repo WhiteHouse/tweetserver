@@ -5,17 +5,49 @@
  * @see system_settings_form
  */
 function tweetfetch_admin_config() {
+  // Check to see if user has set up credentials. If not, warn them nothing will
+  // work.
+  if (!$credentials = variable_get('twitterapi_credentials', FALSE)) {
+    $text = t("Looks like you're missing Twitter REST API credentials. See twitterapi/README and get your credentials set up before you proceed. Otherwise nothing will work.");
+    drupal_set_message($text, 'error');
+  }
+
   $form = array();
 
-  $form['twitterfetch_request'] = array(
+  $form['tweetfetch_description'] = array(
+    '#type' => 'item',
+    '#title' => 'About',
+    '#description' => t("Enter a Twitter API request below then click Fetch (or set it up to run continuously via `drush tweetfetch`). The first time your request runs, Tweet Fetch keeps track of the time and id of the latest tweet in the timeline. After that, Tweet Fetch continues checking for newer tweets, storing them, and writing them to static JSON files like this: sites/default/files/tweets/0.json, tweets/1.json, tweets/2.json, ... tweets/3.json, etc.). When a new tweet is successfully fetched, hook_tweetfetch fires and gives other modules an opportunity to respond (for example, to queue a job to push the latest file up to a CDN). To start counting over from 0, and to zero out existing JSON files, click Reset. (NOTE: If files have already been pushed up to a CDN, this Reset will NOT remove files from your CDN.) To test out your API request, just click Try It."),
+  );
+  
+  $form['tweetfetch_request'] = array(
     '#type' => 'textarea',
-    '#title' => t('Twitter REST API GET request'),
-    '#default_value' => variable_get('twitterfetch_request', 'statuses/user_timeline.json?screen_name=whitehouse&count=1&include_rts=1'),
-    '#description' => t('Enter any supported GET request documented on !docs', array('!docs' => l('dev.twitter.com/docs/api/1.1', 'https://dev.twitter.com/docs/api/1.1'))),
+    '#title' => t('Twitter Timeline API request'),
+    '#default_value' => variable_get('tweetfetch_request', 'statuses/user_timeline.json?screen_name=whitehouse&count=10&include_rts=1'),
+    '#description' => t('Enter a GET request for any timeline documented on !docs', array('!docs' => l('dev.twitter.com/docs/api/1.1', 'https://dev.twitter.com/docs/api/1.1'))),
     '#rows' => 2,
   );
 
-  $form['twitterfetch_tryit'] = array(
+  $form['tweetfetch_debug'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Debug'),
+    '#default_value' => variable_get('tweetfetch_debug', FALSE),
+    '#description' => t('Use dummy data for testing.'),
+  );
+
+  $form['tweetfetch_fetch'] = array(
+    '#type' => 'submit',
+    '#value' => t('Fetch'),
+    '#submit' => array('tweetfetch_fetch_tryit'),
+  );
+
+  $form['tweetfetch_reset'] = array(
+    '#type' => 'submit',
+    '#value' => t('Reset'),
+    '#submit' => array('tweetfetch_reset_tryit'),
+  );
+
+  $form['tweetfetch_tryit'] = array(
     '#type' => 'submit',
     '#value' => t('Try it!'),
     '#submit' => array('tweetfetch_config_tryit'),
@@ -25,13 +57,25 @@ function tweetfetch_admin_config() {
 }
 
 /**
+ * Validation.
+ */
+function tweetfetch_admin_config_validate($form, &$form_state) {
+  $request = $form_state['values']['tweetfetch_request'];
+
+  if (strpos($request, 'since_id')) {
+    form_set_error('since_id', 'since_id: The since_id will be appended to your request automatically, using the last since_id recorded in the database. Do not hard code it here.');
+  }
+
+  // @todo Check for count. Advise not to set count < 5.
+}
+
+/**
  * Callback for "try it" button.
  */
 function tweetfetch_config_tryit() {
-  $request = variable_get('twitterfetch_request', '');
-
-  $twitter_api = new TwitterApi();
-  $response = $twitter_api->get($request);
+  $response = _tweetfetch_fetch();
+  $debug = variable_get('tweetfetch_debug', FALSE);
+  $request = ($debug) ? 'Dummy data request: statuses/json-examples/user_timeline.screen_name=whitehouse.count=10.json' : tweetfetch_get_request();
 
   if (module_exists('devel')) {
     dpm($request, 'request');
@@ -39,7 +83,30 @@ function tweetfetch_config_tryit() {
   }
   else {
     $response = drupal_json_encode($response);
-    drupal_set_message("$request");  
+    drupal_set_message("Request: " . $request);  
     drupal_set_message("<pre>$response</pre>");  
   }
+}
+
+/**
+ * Wrapper around tweetfetch_fetch().
+ */
+function tweetfetch_fetch_tryit() {
+  // If we received a response, display it to end user.
+  if ($response = tweetfetch_fetch()) {
+    if (module_exists('devel')) {
+      dpm($response, 'response');
+    }
+    else {
+      drupal_set_message("<pre>$response</pre>");  
+    }
+  }
+
+}
+
+/**
+ * Wrapper around tweetfetch_reset().
+ */
+function tweetfetch_reset_tryit() {
+  tweetfetch_reset();
 }

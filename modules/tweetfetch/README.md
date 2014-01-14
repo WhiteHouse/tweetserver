@@ -14,7 +14,8 @@ Usage
 
   Set up a cron job or a script to poll Twitter for new tweets like this:
 
-    drush tweet-fetch
+    drush tweetfetch-fetch
+    drush tff
 
 
   New tweets will be stored like this:
@@ -26,3 +27,7 @@ Usage
                                   .    
                                   .    
     sites/<default>/files/tweets/N.json
+
+
+  Modules can implement hook_tweetfetch($filepath) to capture path to new files
+  and react (e.g. queue for pushing up to CDN).

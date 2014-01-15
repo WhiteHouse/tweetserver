@@ -48,7 +48,7 @@ function drush_tweetfetch_fetch() {
   // Run fetch. Get Twitter API response.
   $tweets = tweetfetch_fetch();
 
-  $count = count($tweets);
+  $count = ($tweets) ? count($tweets) : 0;
   drush_print($count . " new tweets fetched.");
 }
 

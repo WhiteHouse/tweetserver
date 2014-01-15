@@ -189,8 +189,11 @@ function tweetfetch_reset($debug = array()) {
 
   // Zero out json files.
   if (!in_array('files', $debug)) {
-    // drupal_set_message('files/tweets/* reset');
-    // @todo
+    $tweet_directory = _tweetfetch_get_tweet_directory();
+    foreach (file_scan_directory($tweet_directory, '/.*/') as $file) {
+      file_unmanaged_delete($file->uri);
+      drupal_set_message('File deleted: ' . $file->uri);
+    }
   }
 
 }
@@ -247,11 +250,19 @@ function _tweetfetch_notify_user_no_new_tweets() {
  *   Path to JSON file or false for fail.
  */
 function _tweetfetch_write($json, $count) {
-  $files_directory = drupal_realpath('public://');
-  $tweets_directory = "{$files_directory}/tweets";
+  $tweets_directory = _tweetfetch_get_tweet_directory();
   file_prepare_directory($tweets_directory, FILE_CREATE_DIRECTORY);
   $file_path = "{$tweets_directory}/{$count}.json";
   $result = file_put_contents($file_path, $json);
 
   return ($result) ? $file_path : FALSE;
+}
+
+/**
+ * Get local tweets directory.
+ */
+function _tweetfetch_get_tweet_directory() {
+  $files_directory = drupal_realpath('public://');
+  $tweets_directory = "{$files_directory}/tweets";
+  return $tweets_directory;
 }

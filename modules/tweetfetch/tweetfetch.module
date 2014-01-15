@@ -23,19 +23,46 @@ function tweetfetch_menu() {
 }
 
 /**
+ * Fetch tweets from Twitter API and operate on them.
+ *
+ * Operations include:
+ *  - save: count, store, write to file
+ *  - skip: increment since_id
+ *
  * @return array | bool
  *   Return API response as an array or false if there are no new tweets.
  */
 function tweetfetch_fetch() {
+  // Retrieve tweets from API.
   if (!$tweets = _tweetfetch_fetch()) {
     // If empty, there are no new tweets. Notify user, then we're done.
     _tweetfetch_notify_user_no_new_tweets();
     return FALSE;
   }
 
+  // @todo Order by created_at before looping through? Do these ever come in out of order?
+  // @todo Confirm earlier tweets will never appear later?
+
   foreach ($tweets as $tweet) {
     // Get unix timestamp for time when tweet was created.
-    $created_timestamp = strtotime($tweet['created_at']);  
+    $created_timestamp = strtotime($tweet['created_at']);
+
+    // Keep track of latest since_id. If since variables have not been set, or
+    //  if previous since vars are from earlier tweets, (re)save since variables.
+    if (!isset($since_timestamp) || ($since_timestamp < $created_timestamp)) {
+      $since_id = $tweet['id'];  
+      $since_timestamp = $created_timestamp;
+    }
+
+    // Set default operations. (These are alterable by other modules.)
+    $op = 'save';
+
+    // Enable other modules to alter tweet and ops.
+    drupal_alter('tweetfetch_tweet', $tweet, $op);
+
+    if ($op != 'save') {
+      continue;  
+    }
 
     // Convert response to JSON. Store as an array at index 0 to preserve
     // Twitter API schema for consuming scripts.
@@ -72,12 +99,6 @@ function tweetfetch_fetch() {
     // Invoke hook_tweetfetch. Pass tweet and file path.
     module_invoke_all('hook_tweetfetch', $filepath);
 
-    // Keep track of latest since_id. If since variables have not been set, or
-    //  if previous since vars are from earlier tweets, (re)save since variables.
-    if (!isset($since_timestamp) || ($since_timestamp < $created_timestamp)) {
-      $since_id = $tweet['id'];  
-      $since_timestamp = $created_timestamp;
-    }
   }
 
   // Update since_id, to be appended to next fetch request. (Like incrementing counter.)

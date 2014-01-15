@@ -92,8 +92,13 @@ function tweetfetch_config_tryit() {
  * Wrapper around tweetfetch_fetch().
  */
 function tweetfetch_fetch_tryit() {
-  // If we received a response, display it to end user.
-  if ($response = tweetfetch_fetch()) {
+
+  //@todo For some reason dsm() and drupal_set_message are only appearing on
+  //  second page load. Maybe related? https://drupal.org/node/54024
+  //  Data in db looks like it's coming out alright, so maybe this is an
+  //  just a cosmetic bug.
+
+ if ($response = tweetfetch_fetch()) {
     if (module_exists('devel')) {
       dpm($response, 'response');
     }

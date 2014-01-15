@@ -1,0 +1,4 @@
+name = Twitpic Only
+description = Filter out tweets that don't include twitpics
+core = 7.x
+dependencies[] = tweetfetch

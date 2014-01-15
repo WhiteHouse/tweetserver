@@ -1,0 +1,19 @@
+<?php
+/**
+ * @file twitpic_only.module
+ *   Filter out tweets coming in through tweetfetch that don't include pics.
+ */
+
+function twitpic_only_tweetfetch_tweet_alter(&$tweet, &$op) {
+  // Skip any tweet that doesn't have a twitpic. Assume skipping unless we
+  // discover a pic.twitter.com URL.
+  $op = 'skip';
+
+  // Check for media.
+  if (isset($tweet['entities']['media'][0]['display_url'])) {
+    $display_url = $tweet['entities']['media'][0]['display_url'];
+    $is_twitpic = (substr($display_url, 0, 15) == 'pic.twitter.com') ? TRUE : FALSE;
+    // If media is a twit pic, set $op to save.
+    $op = ($is_twitpic) ? 'save' : 'skip';
+  }
+}

@@ -18,6 +18,9 @@ function twitpic_only_tweetfetch_tweet_alter(&$tweet, &$op) {
   $op = 'skip';
 
   // Check for media.
+  // @todo: let's find cases where a tweet has more than a single media entity
+  // and see if that breaks this logic.
+  // @todo: assuming this breaks, verify how to harden this logic.
   if (isset($tweet['entities']['media'][0]['display_url'])) {
     $display_url = $tweet['entities']['media'][0]['display_url'];
     $is_twitpic = (substr($display_url, 0, 15) == 'pic.twitter.com') ? TRUE : FALSE;

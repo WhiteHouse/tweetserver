@@ -247,9 +247,8 @@ function _tweetfetch_notify_user_no_new_tweets() {
  *   Path to JSON file or false for fail.
  */
 function _tweetfetch_write($json, $count) {
-  $public = new DrupalPublicStreamWrapper;
-  $files_directory = $public->getDirectoryPath();
-  $tweets_directory = DRUPAL_ROOT . "/{$files_directory}/tweets";
+  $files_directory = drupal_realpath('public://');
+  $tweets_directory = "{$files_directory}/tweets";
   file_prepare_directory($tweets_directory, FILE_CREATE_DIRECTORY);
   $file_path = "{$tweets_directory}/{$count}.json";
   $result = file_put_contents($file_path, $json);

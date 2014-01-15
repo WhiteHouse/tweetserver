@@ -8,6 +8,9 @@
  * Implements hook_tweetfetch_tweet_alter().
  *
  * Check for twitpic. If the tweet has no twitpic, skip it. Do not save.
+ *
+ * @todo Mariano, since we're pre-processing the tweet here anyway, should we
+ * alter anything about the JSON to make things easier for client side JS?
  */
 function twitpic_only_tweetfetch_tweet_alter(&$tweet, &$op) {
   // Skip any tweet that doesn't have a twitpic. Assume skipping unless we

@@ -4,6 +4,11 @@
  *   Filter out tweets coming in through tweetfetch that don't include pics.
  */
 
+/**
+ * Implements hook_tweetfetch_tweet_alter().
+ *
+ * Check for twitpic. If the tweet has no twitpic, skip it. Do not save.
+ */
 function twitpic_only_tweetfetch_tweet_alter(&$tweet, &$op) {
   // Skip any tweet that doesn't have a twitpic. Assume skipping unless we
   // discover a pic.twitter.com URL.

@@ -97,7 +97,7 @@ function tweetfetch_fetch() {
     }
    
     // Invoke hook_tweetfetch. Pass tweet and file path.
-    module_invoke_all('hook_tweetfetch', $filepath);
+    module_invoke_all('tweetfetch', $filepath);
 
   }
 

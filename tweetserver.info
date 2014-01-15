@@ -15,3 +15,8 @@ dependencies[] = composer_autoload
 dependencies[] = guzzle
 dependencies[] = netstorage
 dependencies[] = twitterapi
+
+; tweetserver modules
+; -------------------
+dependencies[] = tweetfetch
+dependencies[] = twitpic_only

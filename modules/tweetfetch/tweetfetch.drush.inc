@@ -51,6 +51,7 @@ function drush_tweetfetch_fetch() {
   if ($seconds = drush_get_option('delay', 0)) {
     // Delay is used to stagger multiple drush commands running on cron in the same minute.  
     sleep($seconds);
+    watchdog('drush tweetfetch-fetch', "Wait {$seconds} seconds");
   }
 
   // Run fetch. Get Twitter API response.

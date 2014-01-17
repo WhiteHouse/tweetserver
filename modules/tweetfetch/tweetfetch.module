@@ -201,6 +201,9 @@ function tweetfetch_reset($debug = array()) {
     }
   }
 
+  // Invoke hook_tweetfetch_reset.
+  module_invoke_all('tweetfetch_reset');
+
 }
 
 /**

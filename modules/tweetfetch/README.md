@@ -42,3 +42,8 @@ Hooks
 
     Alter contents of $tweet before it's stored as JSON and alter $op to
     determine how tweet will be processed (saved or skipped).
+
+
+  hook_tweetfetch_reset
+
+    Hook into reset event to clear caches locally or at CDN.

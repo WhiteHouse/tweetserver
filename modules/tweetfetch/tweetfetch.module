@@ -40,9 +40,6 @@ function tweetfetch_fetch() {
     return FALSE;
   }
 
-  // Determine if this is being invoked via GUI or drush.
-  $is_cli = drupal_is_cli();
-
   // @todo Order by created_at before looping through? Do these ever come in out of order?
   // @todo Confirm earlier tweets will never appear later?
 
@@ -92,14 +89,17 @@ function tweetfetch_fetch() {
 
     // Write a static JSON file.
     if ($filepath = _tweetfetch_write($json, $count)) {
+      // Success.
       $message = t("New file: !here", array('!here' => $filepath));
-      ($is_cli) ? watchdog('tweetfetch', $message) : drupal_set_message($message);
+      $status = '';
     }
     else {
-      // Notify user of failure.
+      // Failure.
       $message = t("Sorry. File could not be written: !here", array('!here' => $filepath));
-      ($is_cli) ? watchdog('tweetfetch', $message, array(), WATCHDOG_ERROR) : drupal_set_message($message, 'error');
+      $status = 'error';
     }
+    // Notify user.
+    _tweetfetch_set_message($message, $status);
    
     // Invoke hook_tweetfetch. Pass tweet and file path.
     module_invoke_all('tweetfetch', $filepath);
@@ -109,7 +109,7 @@ function tweetfetch_fetch() {
   // Update since_id, to be appended to next fetch request. (Like incrementing counter.)
   variable_set('tweetfetch_since_id', $since_id);
   $message = t('tweetfetch_since_id has been updated to: !since_id', array('!since_id' => $since_id));
-  ($is_cli) ? watchdog('tweetfetch', $message) : drupal_set_message($message);
+  _tweetfetch_set_message($message);
 
   // Update tweetfetch_count.
   variable_set('tweetfetch_count', $count);
@@ -147,10 +147,9 @@ function _tweetfetch_save_tweet($id, $created_at, $created_timestamp, $json, $co
  * Execute actual "fetch" API request.
  */
 function _tweetfetch_fetch() {
-  $is_cli = drupal_is_cli();
   if (variable_get('tweetfetch_debug', FALSE)) {
     $message = t('Note: tweetfetch_fetch() is using dummy data. To use real data disable debugging here admin/config/tweetfetch (variable tweetfetch_debug)');
-    ($is_cli) ? watchdog('tweetfetch', $message, array(), WATCHDOG_WARNING) : drupal_set_message($message, 'warning');
+    _tweetfetch_set_message($message, 'warning');
     return _tweetfetch_get_dummy_response();
   }
 
@@ -234,16 +233,13 @@ function _tweetfetch_get_dummy_response() {
  * No new tweets available. Notify user.
  */
 function _tweetfetch_notify_user_no_new_tweets() {
-  $is_cli = drupal_is_cli();
-
   if ($since_id = variable_get('tweetfetch_since_id', FALSE)) {
     $message = t('No new tweets available after since_id: !since_id', array('!since_id' => $since_id));
-    ($is_cli) ? watchdog('tweetfetch', $message) : drupal_set_message($message);
   }
   else {
-    drupal_set_message(t('No tweets available.'));
+    $message = t('No tweets available.');
   }
-
+  _tweetfetch_set_message($message);
 }
 
 /**
@@ -274,4 +270,46 @@ function _tweetfetch_get_tweet_directory() {
   $files_directory = drupal_realpath('public://');
   $tweets_directory = "{$files_directory}/tweets";
   return $tweets_directory;
+}
+
+/**
+ * If running via Drush, determine if verbose option was passed or not. (If so,
+ * watchdog statements get printed. If not, print them with drupal_set_message.).
+ */
+function _tweetfetch_set_message($message, $status = '') {
+
+  // Determine if this is run with drush -v --verbose option.
+  if ($is_cli = drupal_is_cli()) {
+    $context = drush_get_context($context);
+    $is_verbose = $context['DRUSH_VERBOSE'];
+  }
+  else {
+    // Not cli.
+    $is_verbose = FALSE;
+  }
+
+  switch ($status) {
+
+    case 'error':
+      $dsm_status = 'error';
+      $watchdog_status = WATCHDOG_ERROR;
+      break;
+
+    case 'warning':
+      $dsm_status = 'warning';
+      $watchdog_status = WATCHDOG_WARNING;
+      break;
+
+    default:
+      $dsm_status = '';
+      $watchdog_status = '';
+
+  }
+
+  // If Drush is printing watchdog messages. No need to do drupal_set_message.
+  if (!$is_verbose) {
+    drupal_set_message($message, $dsm_status);
+  }
+  watchdog('tweetfetch', $message, array(), $watchdog_status);
+  
 }

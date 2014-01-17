@@ -301,8 +301,8 @@ function _tweetfetch_set_message($message, $status = '') {
       break;
 
     default:
-      $dsm_status = '';
-      $watchdog_status = '';
+      $dsm_status = 'status';
+      $watchdog_status = WATCHDOG_NOTICE;
 
   }
 

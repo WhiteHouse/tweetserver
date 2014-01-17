@@ -11,6 +11,8 @@ dependencies[] = syslog
 
 ; contrib
 ; --------
+; dependencies[] = statsd
+dependencies[] = akamai
 dependencies[] = composer_autoload
 dependencies[] = guzzle
 dependencies[] = netstorage

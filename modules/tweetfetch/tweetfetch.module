@@ -194,15 +194,16 @@ function tweetfetch_reset($debug = array()) {
 
   // Zero out json files.
   if (!in_array('files', $debug)) {
-    $tweet_directory = _tweetfetch_get_tweet_directory();
-    foreach (file_scan_directory($tweet_directory, '/.*/') as $file) {
+    $tweets_directory = _tweetfetch_get_tweets_directory();
+    foreach (file_scan_directory($tweets_directory, '/.*/') as $file) {
       file_unmanaged_delete($file->uri);
       drupal_set_message('File deleted: ' . $file->uri);
     }
   }
 
-  // Invoke hook_tweetfetch_reset.
-  module_invoke_all('tweetfetch_reset');
+  // Invoke hook_tweetfetch_reset. Pass relative path to tweets directory.
+  $tweets_directory = _tweetfetch_get_tweets_directory(TRUE);
+  module_invoke_all('tweetfetch_reset', $tweets_directory);
 
 }
 
@@ -258,7 +259,7 @@ function _tweetfetch_notify_user_no_new_tweets() {
  *   Path to JSON file or false for fail.
  */
 function _tweetfetch_write($json, $count) {
-  $tweets_directory = _tweetfetch_get_tweet_directory();
+  $tweets_directory = _tweetfetch_get_tweets_directory();
   file_prepare_directory($tweets_directory, FILE_CREATE_DIRECTORY);
   $file_path = "{$tweets_directory}/{$count}.json";
   $result = file_put_contents($file_path, $json);
@@ -268,9 +269,17 @@ function _tweetfetch_write($json, $count) {
 
 /**
  * Get local tweets directory.
+ *
+ * More info on working with files directory:
+ *  https://drupal.org/update/modules/6/7#file_directory_path
  */
-function _tweetfetch_get_tweet_directory() {
-  $files_directory = drupal_realpath('public://');
+function _tweetfetch_get_tweets_directory($relative = FALSE) {
+  if ($relative) {
+    $files_directory = variable_get('file_public_path', conf_path() . '/files');
+  }
+  else {
+    $files_directory = drupal_realpath('public://');
+  }
   $tweets_directory = "{$files_directory}/tweets";
   return $tweets_directory;
 }

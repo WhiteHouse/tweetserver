@@ -205,6 +205,10 @@ function tweetfetch_reset($debug = array()) {
   $tweets_directory = _tweetfetch_get_tweets_directory(TRUE);
   module_invoke_all('tweetfetch_reset', $tweets_directory);
 
+  // 
+  $message = t('SUGGESTION: If tweets have been cached at a CDN, you may want to confirm the cache there has been cleared properly before fetching new tweets.');
+  drupal_set_message($message, 'warning');
+
 }
 
 /**

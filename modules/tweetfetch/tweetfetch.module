@@ -40,10 +40,12 @@ function tweetfetch_fetch() {
     return FALSE;
   }
 
-  // @todo Order by created_at before looping through? Do these ever come in out of order?
-  // @todo Confirm earlier tweets will never appear later?
+  // Get $count variable. Use this to keep track of numbered tweets stored and
+  // written to JSON files like 0.json, 1.json, 2.json,... N.json.
+  $count = variable_get('tweetfetch_count', '');
 
   foreach ($tweets as $tweet) {
+
     // Get unix timestamp for time when tweet was created.
     $created_timestamp = strtotime($tweet['created_at']);
 
@@ -60,6 +62,8 @@ function tweetfetch_fetch() {
     // Enable other modules to alter tweet and ops.
     drupal_alter('tweetfetch_tweet', $tweet, $op);
 
+    // Only proceed to write the tweet to JSON and increment the count if $op is
+    // set to 'save'.
     if ($op != 'save') {
       continue;  
     }
@@ -69,10 +73,6 @@ function tweetfetch_fetch() {
     $json = drupal_json_encode(array($tweet));
 
     // Increment tweet count.
-    if (!isset($count)) {
-      // This is our first time through the loop. Get stored count.
-      $count = variable_get('tweetfetch_count', '');
-    }
     if ($count === '') {
       // Count has started over. Start counting the first tweet from 0.
       $count = 0;

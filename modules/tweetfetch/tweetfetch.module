@@ -40,6 +40,9 @@ function tweetfetch_fetch() {
     return FALSE;
   }
 
+  // Flip tweets order so they get saved from older to newer
+  $tweets = array_reverse($tweets);
+
   // Get $count variable. Use this to keep track of numbered tweets stored and
   // written to JSON files like 0.json, 1.json, 2.json,... N.json.
   $count = variable_get('tweetfetch_count', '');

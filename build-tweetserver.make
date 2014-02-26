@@ -25,7 +25,6 @@ defaults[projects][subdir] = tweetserver
 
 ; Contrib projects
 ; -----------------
-projects[] = akamai
 projects[] = composer_autoload
 projects[] = devel
 projects[] = guzzle

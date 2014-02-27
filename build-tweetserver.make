@@ -16,7 +16,6 @@ projects[] = drupal
 ; Install profile
 ; -----------------
 projects[tweetserver][type] = profile
-projects[tweetserver][download][url] = http://git.drupal.org/project/tweetserver.git
 projects[tweetserver][download][branch] = 7.x-1.x
 
 ; Defaults
@@ -38,9 +37,7 @@ projects[] = devel
 projects[] = guzzle
 
 projects[netstorage][type] = module
-projects[netstorage][download][url] = http://git.drupal.org/project/netstorage.git
 projects[netstorage][download][branch] = 7.x-1.x
 
 projects[twitterapi][type] = module
-projects[twitterapi][download][url] = http://git.drupal.org/project/twitterapi.git
 projects[twitterapi][download][branch] = 7.x-1.x

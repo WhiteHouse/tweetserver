@@ -11,7 +11,7 @@ api = 2
 
 ; Drupal core
 ; -------------
-projects[] = drupal
+projects[drupal][version] = 7.25
 
 ; Install profile
 ; -----------------
@@ -33,8 +33,9 @@ defaults[projects][subdir] = tweetserver
 projects[composer_autoload][type] = module
 projects[composer_autoload][download][revision] = 4d73302b952e46d2784fc57aede16046c2d81904
 
-projects[] = devel
-projects[] = guzzle
+projects[devel][version] = 1.3
+
+projects[guzzle][download][revision] = 0dbe667
 
 projects[netstorage][type] = module
 projects[netstorage][download][branch] = 7.x-1.x

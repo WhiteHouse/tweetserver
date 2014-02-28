@@ -68,6 +68,7 @@ Installation and setup
   2. Finish installing guzzle and composer_autoload modules like this (see
      readmes included with projects for more info):
 
+  ```bash
         # Note: Contrib projects included in the tweetserver distro live in
         # sites/all/modules/tweetserver 
 
@@ -76,6 +77,7 @@ Installation and setup
 
         cd sites/all/modules/tweetserver/guzzle
         composer install
+  ```
 
   3. Follow instructions in Twitter API module to get Twitter credentials and
      store them in settings.php. This is a contrib module, included in the
@@ -117,6 +119,7 @@ Installation and setup
        make them available as quickly as possible, one simple approach is to run
        a simple bash loop. 
 
+  ```bash
          # ssh into your server and start a screen session (recommended)
          screen
 
@@ -138,3 +141,4 @@ Installation and setup
 
          # To have your loop sync tweet JSON files to Netstorage, do this:
          while true ; do drush5 tweetfetch-fetch; drush5 queue-run netstorage_upload ; sleep 5; done;
+  ```

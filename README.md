@@ -69,14 +69,14 @@ Installation and setup
      readmes included with projects for more info):
 
   ```bash
-        # Note: Contrib projects included in the tweetserver distro live in
-        # sites/all/modules/tweetserver 
+    # Note: Contrib projects included in the tweetserver distro live in
+    # sites/all/modules/tweetserver 
 
-        cd sites/all/modules/tweetserver/guzzle
-        composer install
+    cd sites/all/modules/tweetserver/guzzle
+    composer install
 
-        cd sites/all/modules/tweetserver/guzzle
-        composer install
+    cd sites/all/modules/tweetserver/guzzle
+    composer install
   ```
 
   3. Follow instructions in Twitter API module to get Twitter credentials and
@@ -120,25 +120,25 @@ Installation and setup
        a simple bash loop. 
 
   ```bash
-         # ssh into your server and start a screen session (recommended)
-         screen
+    # ssh into your server and start a screen session (recommended)
+    screen
 
-         # Now start a loop. Kill it with ctrl+c.
-         #
-         # NOTE: Be careful not to go over Twitter's rate limits. You can easily
-         # double check the rate limit with a simple utility provided by Twitter
-         # API module. For whatever REST resource you're interested in make a
-         # request like this (if you're not interested in statuses, replace that
-         # with any supported REST API resource):
-         #
-         #   drush twitterapi-get 'https://api.twitter.com/1.1/application/rate_limit_status.json?resources=statuses' 
-         #
-         # NOTE ALSO: If you need realtime data, you may want to look into using
-         # Twitter's Streaming API here: https://dev.twitter.com/docs/api/streaming.
-         # Tweet Server version 1 only uses the Twitter's REST API.
-         #
-         while true ; do drush5 tweetfetch-fetch; sleep 5; done;
+    # Now start a loop. Kill it with ctrl+c.
+    #
+    # NOTE: Be careful not to go over Twitter's rate limits. You can easily
+    # double check the rate limit with a simple utility provided by Twitter
+    # API module. For whatever REST resource you're interested in make a
+    # request like this (if you're not interested in statuses, replace that
+    # with any supported REST API resource):
+    #
+    #   drush twitterapi-get 'https://api.twitter.com/1.1/application/rate_limit_status.json?resources=statuses' 
+    #
+    # NOTE ALSO: If you need realtime data, you may want to look into using
+    # Twitter's Streaming API here: https://dev.twitter.com/docs/api/streaming.
+    # Tweet Server version 1 only uses the Twitter's REST API.
+    #
+    while true ; do drush5 tweetfetch-fetch; sleep 5; done;
 
-         # To have your loop sync tweet JSON files to Netstorage, do this:
-         while true ; do drush5 tweetfetch-fetch; drush5 queue-run netstorage_upload ; sleep 5; done;
+    # To have your loop sync tweet JSON files to Netstorage, do this:
+    while true ; do drush5 tweetfetch-fetch; drush5 queue-run netstorage_upload ; sleep 5; done;
   ```

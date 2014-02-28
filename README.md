@@ -5,20 +5,20 @@ About
 -----
 
   Tweet Server is a light weight, Drupal-based application that grabs tweets from
-  Twitter and stores them as static JSON files in Drupals files directory (or
-  optionally pushes them up to a CDN). This enables you to currate your own
+  Twitter and stores them as static JSON files in Drupal's files directory (or
+  optionally pushes them up to a CDN). This enables you to curate your own
   Twitter timeline and access the full content of a tweet as machine readable
-  data, to be incorporated into your website with the most possible flexibility.
+  data, to incorporate it to your website with the most possible flexibility.
 
   Tweet Server was originally developed by the White House for the State of the
-  Union on January 28, 2014. It was used to enable the whitehouse.gov to do two
+  Union Address on January 28, 2014. It was used to enable whitehouse.gov to do two
   things:
     
     1. Consume a custom Twitter timeline that would display live tweets timed with the
        President's speech while the live event was streaming at whitehouse.gov/state-of-the-union-2014
 
     2. Give client-side JavaScript full access to the contents of @whitehouse
-       tweets and twitpics, to be parsed and rendered either below the video as
+       tweets and twitpics, to be parsed and rendered either below the video or as
        a slideshow
 
   Version 1 is a simple, feature-complete, proof-of-concept. It only works with
@@ -55,7 +55,7 @@ Usage
     sites/default/files/tweets/N.json
 
   Optionally push these files up to Akamai Netstorage using the included
-  Netstorage module or any other CDN you choose to integrate. (Integration is
+  Netstorage module or any other CDN you choose to integrate with. (Integration is
   easy. See how Netstorage module implements hook_tweetfetch and
   hook_cron_queue_info).
 

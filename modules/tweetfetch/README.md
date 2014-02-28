@@ -34,7 +34,7 @@ Hooks
 
   hook_tweetfetch
 
-    Modules can implement hook_tweetfetch($filepath) to capture path to new files
+    Modules can implement hook_tweetfetch($filepath) to capture the path to new files
     and react (e.g. queue for pushing up to CDN).
 
 

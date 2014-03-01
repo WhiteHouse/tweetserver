@@ -17,7 +17,8 @@ projects[drupal][version] = 7.25
 ; -----------------
 projects[tweetserver][type] = profile
 projects[tweetserver][download][branch] = 7.x-1.x
-projects[tweetserver][download][tag] = 7.x-1.0-rc2
+projects[tweetserver][download][tag] = 7.x-1.0-rc3
+projects[tweetserver][download][revision] = e214ea5
 
 ; Defaults
 ; ---------
@@ -32,7 +33,7 @@ defaults[projects][subdir] = tweetserver
 ;   https://drupal.org/node/2052721
 ;
 projects[composer_autoload][type] = module
-projects[composer_autoload][download][revision] = 4d73302b952e46d2784fc57aede16046c2d81904
+projects[composer_autoload][download][revision] = 4d73302
 
 projects[devel][version] = 1.3
 
@@ -41,7 +42,9 @@ projects[guzzle][download][revision] = 0dbe667
 projects[netstorage][type] = module
 projects[netstorage][download][branch] = 7.x-1.x
 projects[netstorage][download][tag] = 7.x-1.0-rc1
+projects[netstorage][download][revision] = a3daae2
 
 projects[twitterapi][type] = module
 projects[twitterapi][download][branch] = 7.x-1.x
 projects[twitterapi][download][tag] = 7.x-1.0-rc1
+projects[twitterapi][download][revision] = ddcdc9c4

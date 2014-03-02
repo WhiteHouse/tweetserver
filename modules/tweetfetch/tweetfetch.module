@@ -1,7 +1,7 @@
 <?php
 /**
- * @file tweetfetch.module
- *   Check for new tweets and write them to json files.
+ * @file
+ * Check for new tweets and write them to json files.
  */
 
 /**
@@ -29,7 +29,7 @@ function tweetfetch_menu() {
  *  - save: count, store, write to file
  *  - skip: increment since_id
  *
- * @return array | bool
+ * @return array|bool
  *   Return API response as an array or false if there are no new tweets.
  */
 function tweetfetch_fetch() {
@@ -40,7 +40,7 @@ function tweetfetch_fetch() {
     return FALSE;
   }
 
-  // Flip tweets order so they get saved from older to newer
+  // Flip tweets order so they get saved from older to newer.
   $tweets = array_reverse($tweets);
 
   // Get $count variable. Use this to keep track of numbered tweets stored and
@@ -53,9 +53,9 @@ function tweetfetch_fetch() {
     $created_timestamp = strtotime($tweet['created_at']);
 
     // Keep track of latest since_id. If since variables have not been set, or
-    //  if previous since vars are from earlier tweets, (re)save since variables.
+    // if previous since vars are from earlier tweets, (re)save since variables.
     if (!isset($since_timestamp) || ($since_timestamp < $created_timestamp)) {
-      $since_id = $tweet['id'];  
+      $since_id = $tweet['id'];
       $since_timestamp = $created_timestamp;
     }
 
@@ -68,7 +68,7 @@ function tweetfetch_fetch() {
     // Only proceed to write the tweet to JSON and increment the count if $op is
     // set to 'save'.
     if ($op != 'save') {
-      continue;  
+      continue;
     }
 
     // Convert response to JSON. Store as an array at index 0 to preserve
@@ -82,7 +82,7 @@ function tweetfetch_fetch() {
     }
     else {
       // This is tweet number N + 1.
-      $count++; 
+      $count++;
     }
 
     // Save it in the db.
@@ -103,13 +103,14 @@ function tweetfetch_fetch() {
     }
     // Notify user.
     _tweetfetch_set_message($message, $status);
-   
+
     // Invoke hook_tweetfetch. Pass tweet and file path.
     module_invoke_all('tweetfetch', $filepath);
 
   }
 
-  // Update since_id, to be appended to next fetch request. (Like incrementing counter.)
+  // Update since_id, to be appended to next fetch request. (Like incrementing
+  // counter.)
   variable_set('tweetfetch_since_id', $since_id);
   $message = t('tweetfetch_since_id has been updated to: !since_id', array('!since_id' => $since_id));
   _tweetfetch_set_message($message);
@@ -122,6 +123,8 @@ function tweetfetch_fetch() {
 }
 
 /**
+ * Store fetched tweet as JSON in db. 
+ *
  * @param array $id
  *   Twitter tweet id
  *
@@ -162,7 +165,7 @@ function _tweetfetch_fetch() {
   // Submit request to Twitter and receive response.
   $twitter_api = new TwitterApi();
   $response = $twitter_api->get($request);
- 
+
   return $response;
 }
 
@@ -208,7 +211,6 @@ function tweetfetch_reset($debug = array()) {
   $tweets_directory = _tweetfetch_get_tweets_directory(TRUE);
   module_invoke_all('tweetfetch_reset', $tweets_directory);
 
-  // 
   $message = t('SUGGESTION: If tweets have been cached at a CDN, you may want to confirm the cache there has been cleared properly before fetching new tweets.');
   drupal_set_message($message, 'warning');
 
@@ -218,12 +220,13 @@ function tweetfetch_reset($debug = array()) {
  * Append since_id to tweetfetch_request.
  *
  * @return array
+ *   Return RESTful API request to be submitted to twitterapi.
  */
 function tweetfetch_get_request() {
-  $since_id = variable_get('tweetfetch_since_id', FALSE); 
+  $since_id = variable_get('tweetfetch_since_id', FALSE);
   $request = variable_get('tweetfetch_request', FALSE);
   $request = ($since_id) ? "{$request}&since_id={$since_id}" : $request;
-  
+
   return $request;
 }
 
@@ -231,7 +234,7 @@ function tweetfetch_get_request() {
  * Return dummy data included with module.
  */
 function _tweetfetch_get_dummy_response() {
-  $path = DRUPAL_ROOT 
+  $path = DRUPAL_ROOT
         . "/" . drupal_get_path('module', 'tweetfetch')
         . "/json-examples/user_timeline.screen_name=whitehouse.count=10.json";
   $contents = file_get_contents($path);
@@ -262,7 +265,7 @@ function _tweetfetch_notify_user_no_new_tweets() {
  * @param int $count
  *   Tweet count
  *
- * @return string | bool
+ * @return string|bool
  *   Path to JSON file or false for fail.
  */
 function _tweetfetch_write($json, $count) {
@@ -292,8 +295,10 @@ function _tweetfetch_get_tweets_directory($relative = FALSE) {
 }
 
 /**
+ * Handle drupal_set_message vs. watchdog determination for messages.
+ *
  * If running via Drush, determine if verbose option was passed or not. (If so,
- * watchdog statements get printed. If not, print them with drupal_set_message.).
+ * watchdog statements get printed. If not, print with drupal_set_message.).
  */
 function _tweetfetch_set_message($message, $status = '') {
 
@@ -330,5 +335,5 @@ function _tweetfetch_set_message($message, $status = '') {
     drupal_set_message($message, $dsm_status);
   }
   watchdog('tweetfetch', $message, array(), $watchdog_status);
-  
+
 }

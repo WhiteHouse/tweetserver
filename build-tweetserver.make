@@ -17,7 +17,8 @@ projects[drupal][version] = 7.25
 ; -----------------
 projects[tweetserver][type] = profile
 projects[tweetserver][download][branch] = 7.x-1.x
-projects[tweetserver][download][tag] = 7.x-1.0-rc4
+projects[tweetserver][download][tag] = 7.x-1.0-rc5
+projects[tweetserver][subdir] = ''
 
 ; Defaults
 ; ---------

@@ -1,5 +1,22 @@
 <?php
 /**
+ * Implements hook_install().
+ */
+function tweetfetch_install() {
+  variable_set('tweetfetch_request', 'statuses/user_timeline.json?screen_name=whitehouse&count=10&include_rts=1');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function tweetfetch_uninstall() {
+  db_delete('variable')
+    ->condition('name', db_like('tweetfetch') . '%', 'LIKE')
+    ->execute();
+  cache_clear_all('variables', 'cache_bootstrap');
+}
+
+/**
  * Implements hook_schema().
  */
 function tweetfetch_schema() {

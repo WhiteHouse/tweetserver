@@ -28,7 +28,7 @@ function tweetfetch_admin_config() {
   $form['tweetfetch_request'] = array(
     '#type' => 'textarea',
     '#title' => t('Twitter Timeline API request'),
-    '#default_value' => variable_get('tweetfetch_request', 'statuses/user_timeline.json?screen_name=whitehouse&count=10&include_rts=1'),
+    '#default_value' => variable_get('tweetfetch_request', ''),
     '#description' => t('Enter a GET request for any timeline documented on !docs', array('!docs' => url('https://dev.twitter.com/docs/api/1.1'))),
     '#rows' => 2,
   );
@@ -97,7 +97,6 @@ function tweetfetch_config_tryit() {
  * Wrapper around tweetfetch_fetch().
  */
 function tweetfetch_fetch_tryit() {
-
   // @todo For some reason dsm() and drupal_set_message are only appearing on
   // second page load. Maybe related? https://drupal.org/node/54024
   // Data in db looks like it's coming out alright, so maybe this is an

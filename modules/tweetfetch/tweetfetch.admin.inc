@@ -77,7 +77,9 @@ function tweetfetch_admin_config_validate($form, &$form_state) {
 /**
  * Callback for "try it" button.
  */
-function tweetfetch_config_tryit() {
+function tweetfetch_config_tryit($form, &$form_state) {
+  _tweetfetch_update_admin_settings($form_state['values']);
+
   $response = _tweetfetch_fetch();
   $debug = variable_get('tweetfetch_debug', FALSE);
   $request = ($debug) ? 'Dummy data request: statuses/json-examples/user_timeline.screen_name=whitehouse.count=10.json' : tweetfetch_get_request();
@@ -96,7 +98,9 @@ function tweetfetch_config_tryit() {
 /**
  * Wrapper around tweetfetch_fetch().
  */
-function tweetfetch_fetch_tryit() {
+function tweetfetch_fetch_tryit($form, &$form_state) {
+  _tweetfetch_update_admin_settings($form_state['values']);
+
   // @todo For some reason dsm() and drupal_set_message are only appearing on
   // second page load. Maybe related? https://drupal.org/node/54024
   // Data in db looks like it's coming out alright, so maybe this is an
@@ -117,4 +121,21 @@ function tweetfetch_fetch_tryit() {
  */
 function tweetfetch_reset_tryit() {
   tweetfetch_reset();
+}
+
+/**
+ * Update admin settings.
+ *
+ * @param array $values
+ *   Values from $form_state['values']
+ */
+function _tweetfetch_update_admin_settings($values) {
+  $settings = array(
+    'tweetfetch_request',
+    'tweetfetch_debug',
+  );
+  foreach ($settings as $setting) {
+    $value = $values[$setting];
+    variable_set($setting, $value);
+  }
 }

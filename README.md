@@ -75,7 +75,7 @@ Installation and setup
     cd sites/all/modules/tweetserver/guzzle
     composer install
 
-    cd sites/all/modules/tweetserver/guzzle
+    cd sites/all/modules/tweetserver/composer_autoload
     composer install
   ```
 
